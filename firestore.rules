@@ -1,0 +1,27 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Alumni collection - anyone can read, only authenticated users can write
+    match /alumni/{document} {
+      allow read: if true; // Anyone can read alumni profiles
+      allow write: if request.auth != null; // Only authenticated users can write
+    }
+    
+    // Users collection - users can only read/write their own data
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Events collection - anyone can read, authenticated users can write
+    match /events/{eventId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    
+    // Blog posts - anyone can read, authenticated users can write
+    match /blog/{postId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+  }
+}
